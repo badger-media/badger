@@ -6,6 +6,8 @@ import { defineConfig, devices } from "@playwright/test";
  */
 // require('dotenv').config();
 
+const ELECTRON = Boolean(process.env.TEST_USE_ELECTRON);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -48,14 +50,31 @@ export default defineConfig({
       },
       testDir: "./e2e/standalone",
     },
+    {
+      name: "complete",
+      use: {},
+      testDir: "./e2e/complete",
+      fullyParallel: false,
+    },
   ],
 
   /* Run your local dev server before starting the tests */
   webServer: [
     {
+      command: "npx -y @redux-devtools/cli --port 5175",
+      url: "http://localhost:5175",
+      reuseExistingServer: !process.env.CI,
+    },
+    {
       command: "yarn devServer",
       url: "http://localhost:5174/getState",
       reuseExistingServer: !process.env.CI,
+      env: {
+        ...process.env,
+        ENABLE_REDUX_DEVTOOLS: "true",
+      },
+      stdout: "pipe",
+      stderr: "pipe",
     },
     {
       command: "yarn devRenderer",

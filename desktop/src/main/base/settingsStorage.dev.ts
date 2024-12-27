@@ -5,6 +5,10 @@ import * as fsp from "fs/promises";
 import { getLogger } from "./logging";
 import { inspect } from "util";
 import * as nodePath from "path";
+import isElectron from "is-electron";
+import invariant from "../../common/invariant";
+
+invariant(!isElectron(), "This file should not be used in Electron");
 
 const logger = getLogger("settingsStorage.dev");
 
@@ -12,6 +16,10 @@ const dir = nodePath.join(process.cwd(), ".dev");
 const path = once(() => nodePath.join(dir, "settings.json"));
 
 export async function saveSettings(val: AppSettings) {
+  if (process.env.E2E_TEST === "true") {
+    logger.info("Skipping saving settings in E2E test");
+    return;
+  }
   const nv = cloneDeep(val);
   const data = JSON.stringify(nv, null, 2);
   await fsp.mkdir(dir, { recursive: true });

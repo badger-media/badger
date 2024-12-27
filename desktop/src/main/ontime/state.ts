@@ -68,7 +68,7 @@ export const pushEvents = createAsyncThunk(
     invariant(selectedShow, "No show selected");
     const events = showToOntimeEvents(selectedShow, payload.rundownID);
     logger.debug("Ready for Ontime push");
-    logger.debug(events);
+    logger.trace(events);
 
     const ontime = getOntimeInstance();
     const current = await ontime.getEvents();
