@@ -49,7 +49,6 @@ const loggerMiddleware: Middleware = (store) => (next) => (action) => {
   logger.info(`action: ${(action as Action).type}`);
   logger.debug(inspect(action));
   const state = next(action);
-  logger.trace(state);
   return state;
 };
 
