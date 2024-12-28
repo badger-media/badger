@@ -88,6 +88,10 @@ export function createReduxDevServer(
     `Redux Dev Server listening on http://localhost:${DEV_SERVER_PORT}`,
   );
   server.listen(DEV_SERVER_PORT);
+  if (process.env.E2E_TEST !== "true") {
+    console.log("Doing preflight");
+    store.dispatch(doPreflight());
+  }
 }
 
 createReduxDevServer(store, exposedActionCreators);

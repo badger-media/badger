@@ -2,7 +2,19 @@ import { Switch } from "@badger/components/switch";
 import { Label } from "@badger/components/label";
 import Button from "@badger/components/button";
 import { dispatch, useAppSelector } from "../store";
-import { ipcRenderer } from "electron/renderer";
+import isElectron from "is-electron";
+import logging from "loglevel";
+
+async function trySendRenderer(fn: string) {
+  if (isElectron()) {
+    const { ipcRenderer } = await import(
+      /* @vite-ignore */ `${"electron/renderer"}`
+    );
+    ipcRenderer.send(fn);
+  } else {
+    logging.warn(`Tried to send ${fn} but not in electron`);
+  }
+}
 
 export function DevToolsSettings() {
   const enabled = useAppSelector((state) => state.settings.devtools.enabled);
@@ -56,7 +68,7 @@ export function DevToolsSettings() {
           <Button
             color="danger"
             onClick={() => {
-              ipcRenderer.send("devtools-throw-error");
+              trySendRenderer("devtools-throw-error");
             }}
           >
             Throw error in main process
@@ -64,7 +76,7 @@ export function DevToolsSettings() {
           <Button
             color="danger"
             onClick={() => {
-              ipcRenderer.send("devtools-crash");
+              trySendRenderer("devtools-crash");
             }}
           >
             Crash main process

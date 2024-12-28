@@ -11,7 +11,8 @@ import { listenOnStore } from "../storeListener";
 import { connectToServer } from "./serverConnectionState";
 import { getLogger } from "./logging";
 import { connectToOBS } from "../obs/state";
-import { castDraft, original } from "immer";
+import { original } from "immer";
+import type { LogLevelNames } from "loglevel";
 
 const logger = getLogger("settings");
 
@@ -35,6 +36,9 @@ export const AppSettingsSchema = z.object({
   ontime: z.object({
     host: z.string().url().or(z.null()),
   }),
+  logging: z.object({
+    level: z.enum(["trace", "debug", "info", "warn", "error"]),
+  }),
 });
 export type AppSettings = z.infer<typeof AppSettingsSchema>;
 const defaultSettings: AppSettings = {
@@ -56,6 +60,9 @@ const defaultSettings: AppSettings = {
   server: {
     endpoint: null,
     password: "",
+  },
+  logging: {
+    level: (process.env.BADGER_LOG_LEVEL as LogLevelNames) ?? "info",
   },
 };
 export const SettingsStateSchema = AppSettingsSchema.extend({

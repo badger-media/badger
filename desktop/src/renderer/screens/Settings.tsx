@@ -8,11 +8,22 @@ import {
 import { VMixConnection } from "./vMix";
 import { OntimeSettings } from "./Ontime";
 import { MediaSettings } from "./MediaSettings";
-import { useAppSelector } from "../store";
+import { dispatch, useAppSelector } from "../store";
 import { DevToolsSettings } from "./DevToolsSettings";
+import { Label } from "@badger/components/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@badger/components/select";
+import type { LogLevelNames } from "loglevel";
 
 export function Settings() {
   const integrations = useAppSelector((state) => state.integrations.supported);
+
+  const logLevel = useAppSelector((state) => state.settings.logging.level);
 
   return (
     <Tabs defaultValue="obs">
@@ -72,10 +83,12 @@ export function Settings() {
         </Select> */}
 
         <h2 className="text-xl">Logging</h2>
-        {/* <Label htmlFor="logLevel">Log Level</Label>
+        <Label htmlFor="logLevel">Log Level</Label>
         <Select
           value={logLevel}
-          onValueChange={(e) => doSetLogLevel.mutate(e as LogLevelNames)}
+          onValueChange={(v) =>
+            dispatch.setSetting("logging", "level", v as LogLevelNames)
+          }
         >
           <SelectTrigger>
             <SelectValue />
@@ -87,7 +100,7 @@ export function Settings() {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select> */}
+        </Select>
         <h2 className="text-xl">Developer Tools</h2>
         <DevToolsSettings />
       </TabsContent>
