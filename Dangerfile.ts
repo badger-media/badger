@@ -41,6 +41,12 @@ async function findAddedAndRemovedTodoIssues() {
       }
     }
   }
+  for (const rm of removed) {
+    if (added.has(rm)) {
+      removed.delete(rm);
+      added.delete(rm);
+    }
+  }
   return { removed, added, linesWithoutKey, fixmes };
 }
 
