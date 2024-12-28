@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+#MISE env={E2E_TEST = "true"}
+#MISE dir="{{config_root}}/desktop"
+#MISE depends="build:desktop"
+#USAGE flag "--headed" help="Run tests in headed mode"
+#USAGE flag "-d --debug-webserver" help="Run tests in debug mode"
+#USAGE flag "-e --electron" help="Run tests in Electron"
+playwright_args=()
+if [ -n "$usage_headed" ]; then
+  playwright_args+=("--headed")
+fi
+if [ -n "$usage_electron" ]; then
+  export ELECTRON=true
+fi
+if [ -n "$usage_debug" ]; then
+  export DEBUG='pw:api*,pw:browser*'
+fi
+export E2E_TEST=true
+npx playwright test --project standalone "${playwright_args[@]}"

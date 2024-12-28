@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+#MISE dir="{{config_root}}/desktop"
+#MISE sources=["{{config_root}}/desktop/src/**/*", "{{config_root}}/desktop/*.cjs", "{{config_root}}/desktop/*.mjs", "{{config_root}}/desktop/*.ts", "{{config_root}}/desktop/*.mts", "{{config_root}}/desktop/package.json"]
+#MISE outputs=["{{config_root}}/desktop/out/**/*"]
+rm -rf out
+node ../node_modules/.bin/electron-vite build
