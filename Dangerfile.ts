@@ -1,6 +1,6 @@
 import { message, danger, fail, warn } from "danger";
 
-const issueKeyRe = /(BDGR-\d+)/g;
+const issueKeyRe = /(BA?DGE?R-\d+)/g;
 
 async function findAddedAndRemovedTodoIssues() {
   const removed = new Set<string>();

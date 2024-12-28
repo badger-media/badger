@@ -21,12 +21,6 @@ const integrationsSlice = createSlice({
     supported: getSupportedIntegrations(),
   },
   reducers: {},
-  extraReducers: (builder) => {
-    builder.addDefaultCase((state, action) => {
-      console.log("Integrations reducer state", original(state));
-      return state;
-    });
-  },
 });
 
 export const integrationsReducer = integrationsSlice.reducer;

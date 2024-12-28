@@ -28,6 +28,10 @@ export async function saveSettings(val: AppSettings) {
 }
 
 export async function loadSettings(): Promise<AppSettings> {
+  if (process.env.E2E_TEST === "true") {
+    logger.info("Skipping loading settings in E2E test");
+    return SettingsStateSchema.parse(undefined);
+  }
   let data;
   try {
     data = await fsp.readFile(path(), { encoding: "utf-8" });
