@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense, useState } from "react";
-import ConnectAndSelectShowGate from "./ConnectAndSelectShowGate";
-import MainScreen from "./MainScreen";
+import ConnectAndSelectShowGate from "./screens/ConnectAndSelectShowGate";
+import MainScreen from "./screens/MainScreen";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import { PreflightGate } from "./PreflightGate";
+import { PreflightGate } from "./screens/PreflightGate";
 
 export default function App() {
   const [queryClient] = useState(() => new QueryClient());

@@ -13,6 +13,7 @@ import { exposedActionCreators, store } from "./store";
 import { doPreflight } from "./preflight";
 import { listenOnStore } from "./storeListener";
 import { setupStoreIPC } from "./storeIpc";
+import { ipcMain } from "electron/main";
 
 setupStoreIPC(store, exposedActionCreators);
 
@@ -111,5 +112,18 @@ app.on("activate", () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+ipcMain.on("devtools-throw-error", () => {
+  if (!store.getState().settings.devtools.enabled) {
+    return;
+  }
+  process.nextTick(() => {
+    throw new Error("Test Main Process Exception");
+  });
+});
+
+ipcMain.on("devtools-crash", () => {
+  if (!store.getState().settings.devtools.enabled) {
+    return;
+  }
+  process.crash();
+});

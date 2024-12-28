@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 import { devToolsEnhancer as remoteReduxDevToolsEnhancer } from "@redux-devtools/remote";
-import { settingsReducer } from "./base/settings";
+import { setSetting, settingsReducer } from "./base/settings";
 import { listener } from "./storeListener";
 import { localMediaActions, localMediaReducer } from "./media/state";
 import {
@@ -24,7 +24,10 @@ import { getLogger } from "./base/logging";
 import { inspect } from "util";
 import { serverDataSlice } from "./base/serverDataState";
 import { addContinuityItemAsScene, connectToOBS, obsSlice } from "./obs/state";
-import { integrationsReducer } from "./base/integrations";
+import {
+  integrationsReducer,
+  overrideSupportedIntegrations,
+} from "./base/integrations";
 import { connectToOntime, ontimeReducer, pushEvents } from "./ontime/state";
 import {
   connectToVMix,
@@ -136,5 +139,7 @@ export const exposedActionCreators = {
   loadAllVTs,
   loadSingleVT,
   loadAssets,
+  overrideSupportedIntegrations,
+  setSetting,
 };
 export type ExposedActionCreators = typeof exposedActionCreators;

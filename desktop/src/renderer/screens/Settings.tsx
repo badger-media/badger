@@ -9,6 +9,7 @@ import { VMixConnection } from "./vMix";
 import { OntimeSettings } from "./Ontime";
 import { MediaSettings } from "./MediaSettings";
 import { useAppSelector } from "../store";
+import { DevToolsSettings } from "./DevToolsSettings";
 
 export function Settings() {
   const integrations = useAppSelector((state) => state.integrations.supported);
@@ -87,6 +88,8 @@ export function Settings() {
             ))}
           </SelectContent>
         </Select> */}
+        <h2 className="text-xl">Developer Tools</h2>
+        <DevToolsSettings />
       </TabsContent>
       {/* {devToolsState.enabled && (
         <TabsContent value="obs-devtools">

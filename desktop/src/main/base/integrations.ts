@@ -1,4 +1,4 @@
-import { createSlice, original } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Integration } from "../../common/types";
 
 function getSupportedIntegrations(): Integration[] {
@@ -20,7 +20,15 @@ const integrationsSlice = createSlice({
   initialState: {
     supported: getSupportedIntegrations(),
   },
-  reducers: {},
+  reducers: {
+    overrideSupportedIntegrations: (
+      state,
+      action: PayloadAction<Integration[]>,
+    ) => {
+      state.supported = action.payload;
+    },
+  },
 });
 
 export const integrationsReducer = integrationsSlice.reducer;
+export const { overrideSupportedIntegrations } = integrationsSlice.actions;

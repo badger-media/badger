@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import type { PreflightTask } from "../main/preflight";
-import { useAppSelector } from "./store";
+import type { PreflightTask } from "../../main/preflight";
+import { useAppSelector } from "../store";
 
 function PreflightShell(props: { status: string; tasks: PreflightTask[] }) {
   return (

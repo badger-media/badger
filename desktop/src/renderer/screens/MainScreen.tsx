@@ -1,4 +1,4 @@
-import invariant from "../common/invariant";
+import invariant from "../../common/invariant";
 import {
   Dialog,
   DialogContent,
@@ -19,17 +19,17 @@ import {
 import { Button } from "@badger/components/button";
 import { IoCaretDownOutline, IoCog, IoDownloadSharp } from "react-icons/io5";
 import { Suspense, useState } from "react";
-import OBSScreen from "./screens/OBS";
-import VMixScreen from "./screens/vMix";
-import { Settings } from "./screens/Settings";
+import OBSScreen from "./OBS";
+import VMixScreen from "./vMix";
+import { Settings } from "./Settings";
 import {
   Table,
   TableBody,
   TableCell,
   TableRow,
 } from "@badger/components/table";
-import { dispatch, useAppSelector } from "./store";
-import { OntimePush } from "./screens/Ontime";
+import { dispatch, useAppSelector } from "../store";
+import { OntimePush } from "./Ontime";
 import { SelectShowForm } from "./ConnectAndSelectShowGate";
 import { Alert } from "@badger/components/alert";
 

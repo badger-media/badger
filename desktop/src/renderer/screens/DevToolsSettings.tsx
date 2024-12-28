@@ -1,47 +1,12 @@
-import { useQueryClient } from "@tanstack/react-query";
-// import { getQueryKey } from "@trpc/react-query";
 import { Switch } from "@badger/components/switch";
 import { Label } from "@badger/components/label";
 import Button from "@badger/components/button";
+import { dispatch, useAppSelector } from "../store";
+import { ipcRenderer } from "electron/renderer";
 
-export function DevToolsSettings({ devToolsState, integrations }) {
-  const queryClient = useQueryClient();
-
-  const doMainError = ipc.devtools.throwException.useMutation();
-  const doMainCrash = ipc.devtools.crash.useMutation();
-  const doSetIntegrations = ipc.devtools.setEnabledIntegrations.useMutation({
-    onSettled() {
-      queryClient.invalidateQueries(getQueryKey(ipc.supportedIntegrations));
-    },
-  });
-
-  const setDevToolsState = ipc.devtools.setSettings.useMutation({
-    async onMutate(newSettings) {
-      await queryClient.cancelQueries(getQueryKey(ipc.devtools.getSettings));
-      const oldSettings = queryClient.getQueryData(
-        getQueryKey(ipc.devtools.getSettings),
-      );
-      queryClient.setQueryData(
-        getQueryKey(ipc.devtools.getSettings),
-        newSettings,
-      );
-      return { oldSettings };
-    },
-    async onError(_err, _newSettings, context) {
-      if (context) {
-        queryClient.setQueryData(
-          getQueryKey(ipc.devtools.getSettings),
-          context.oldSettings,
-        );
-      }
-    },
-    async onSettled() {
-      await queryClient.invalidateQueries(
-        getQueryKey(ipc.devtools.getSettings),
-      );
-    },
-  });
-
+export function DevToolsSettings() {
+  const enabled = useAppSelector((state) => state.settings.devtools.enabled);
+  const integrations = useAppSelector((state) => state.integrations.supported);
   return (
     <div>
       <h2 className="text-xl">Developer Tools</h2>
@@ -52,14 +17,14 @@ export function DevToolsSettings({ devToolsState, integrations }) {
       <div className="flex items-center space-x-2">
         <Switch
           id="enable-devmode"
-          checked={devToolsState.enabled}
+          checked={enabled}
           onCheckedChange={(v: boolean) =>
-            setDevToolsState.mutate({ enabled: v })
+            dispatch.setSetting("devtools", "enabled", v)
           }
         />
         <Label htmlFor="enable-devmode">Enable Developer Mode</Label>
       </div>
-      {devToolsState.enabled && (
+      {enabled && (
         <div className="flex flex-col items-start space-y-2">
           <h3>Enabled integrations</h3>
           {(["obs", "vmix", "ontime"] as const).map((int) => (
@@ -74,7 +39,7 @@ export function DevToolsSettings({ devToolsState, integrations }) {
                   } else {
                     newIntegrations.splice(newIntegrations.indexOf(int), 1);
                   }
-                  doSetIntegrations.mutate(newIntegrations);
+                  dispatch.overrideSupportedIntegrations(newIntegrations);
                 }}
               />
               <Label htmlFor={"enable-" + int}>{int}</Label>
@@ -91,7 +56,7 @@ export function DevToolsSettings({ devToolsState, integrations }) {
           <Button
             color="danger"
             onClick={() => {
-              doMainError.mutate();
+              ipcRenderer.send("devtools-throw-error");
             }}
           >
             Throw error in main process
@@ -99,7 +64,7 @@ export function DevToolsSettings({ devToolsState, integrations }) {
           <Button
             color="danger"
             onClick={() => {
-              doMainCrash.mutate();
+              ipcRenderer.send("devtools-crash");
             }}
           >
             Crash main process
