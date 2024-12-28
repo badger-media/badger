@@ -81,7 +81,11 @@ You can also include \`Closes ${Array.from(removed).join(
   }
   if (fixmes.size > 0) {
     fail(
-      `Found ${fixmes.size} FIXME comments. Please either remove them or convert them to TODOs (with an associated Linear ticket).`,
+      `Found ${fixmes.size} FIXME comments. Please either remove them or convert them to TODOs (with an associated Linear ticket): \n${Array.from(
+        fixmes,
+      )
+        .map((l) => " * `" + l + "`")
+        .join("\n")}`,
     );
   }
 };
