@@ -7,5 +7,6 @@
     "paths": {
       "@/*": ["../server/*"]
     }
-  }
+  },
+  "exclude": ["src/main/ipcApi--old.ts"]
 }
