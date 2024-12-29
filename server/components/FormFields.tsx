@@ -75,7 +75,7 @@ export const Field = forwardRef(function Field<
   TFieldName extends FieldPath<TFields> = FieldPath<TFields>,
   TEl extends React.ElementType = typeof Input,
 >(
-  props: FieldBaseProps<TFields, TFieldName, TEl> &
+  props: Omit<FieldBaseProps<TFields, TFieldName, TEl>, "name"> &
     React.ComponentPropsWithoutRef<TEl>,
   ref: ForwardedRef<HTMLElement>,
 ) {

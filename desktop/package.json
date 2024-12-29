@@ -18,9 +18,7 @@
     "prettify": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "E2E_TEST=true playwright test",
-    "microserver": "tsx microserver/index.ts",
-    "microserver:watch": "tsx --watch microserver/index.ts"
+    "test:e2e": "E2E_TEST=true playwright test"
   },
   "keywords": [],
   "author": {
