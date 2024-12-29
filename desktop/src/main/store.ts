@@ -147,5 +147,6 @@ export const exposedActionCreators = {
   overrideSupportedIntegrations,
   setSetting,
   obsCallArbitrary: callArbitrary,
+  deleteOldMedia: localMediaActions.deleteOldMedia,
 };
 export type ExposedActionCreators = typeof exposedActionCreators;

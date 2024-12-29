@@ -14,6 +14,11 @@ import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { listenOnStore } from "../storeListener";
 import invariant from "../../common/invariant";
 import { getSelectedShow } from "../base/selectedShow";
+import { serverAPI } from "../base/serverApiClient";
+import { getLogger } from "../base/logging";
+import { isAfter } from "date-fns";
+
+const logger = getLogger("localMedia/state");
 
 interface DownloadQueueItem {
   mediaID: number;
@@ -61,6 +66,79 @@ const downloadMedia = createAsyncThunk(
       },
     );
     return { mediaID: task.mediaID, path: outputPath, sizeBytes };
+  },
+);
+
+const deleteOldMedia = createAsyncThunk(
+  "localMedia/deleteOldMedia",
+  async (payload: { minAgeDays: number }, thunkAPI) => {
+    const state = thunkAPI.getState() as AppState;
+    const localMedia = state.localMedia.media;
+    const currentShow = state.selectedShow.show;
+    let notInUse;
+    if (currentShow) {
+      const inUse = new Set<number>();
+      currentShow?.continuityItems.forEach((x) => {
+        if (x.media) {
+          inUse.add(x.media.id);
+        }
+      });
+      currentShow?.rundowns.forEach((x) =>
+        x.items.forEach((y) => {
+          if (y.media) {
+            inUse.add(y.media.id);
+          }
+        }),
+      );
+      notInUse = localMedia.filter((x) => !inUse.has(x.mediaID));
+    } else {
+      notInUse = localMedia;
+    }
+    const mediaObjects = await serverAPI().media.bulkGet.query(
+      notInUse.map((x) => x.mediaID),
+    );
+    const deletedIDs = [];
+    for (const result of mediaObjects) {
+      logger.debug("Deletion candidate", result);
+      if (result.state !== "Ready") {
+        continue;
+      }
+      const latestShowDate = [
+        result.rundownItems.map((x) => x.rundown.show.start),
+        result.continuityItems.map((x) => x.show.start),
+        result.assets.map((x) => x.rundown.show.start),
+      ]
+        .flat()
+        .reduce((a, b) => (isAfter(a, b) ? a : b), new Date(0));
+      invariant(
+        latestShowDate.getTime() !== 0,
+        "no rundown, continuity item, or asset for media " + result.id,
+      );
+      const age =
+        (Date.now() - latestShowDate.getTime()) / (1000 * 60 * 60 * 24);
+      logger.debug(
+        result.id,
+        result.name,
+        "age",
+        age,
+        "threshold",
+        payload.minAgeDays,
+      );
+      if (age > payload.minAgeDays) {
+        logger.debug("Deleting", result.id);
+        const path = localMedia.find((x) => x.mediaID === result.id)?.path;
+        if (!path) {
+          throw new Error(`Media ${result.id} not found`);
+        }
+        deletedIDs.push(result.id);
+        // TODO: We delete it on disk before removing it from state. In theory this is
+        // safe because of the notInUse check, but it's a bit risky. We should remove
+        // it from the state, then delete from disk.
+        await fsp.unlink(path);
+        logger.info("Deleted", path);
+      }
+    }
+    return deletedIDs;
   },
 );
 
@@ -187,6 +265,11 @@ const localMediaState = createAppSlice({
       });
       state.currentDownload = state.downloadQueue.shift() ?? null;
     });
+    builder.addCase(deleteOldMedia.fulfilled, (state, action) => {
+      state.media = state.media.filter(
+        (x) => !action.payload.includes(x.mediaID),
+      );
+    });
   },
 });
 
@@ -211,4 +294,5 @@ export const localMediaActions = {
   queueMediaDownload: localMediaState.actions.queueMediaDownload,
   downloadAllMediaForSelectedShow:
     localMediaState.actions.downloadAllMediaForSelectedShow,
+  deleteOldMedia,
 };
