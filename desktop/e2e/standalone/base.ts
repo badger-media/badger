@@ -93,7 +93,7 @@ if (ELECTRON) {
   });
 } else {
   test = test.extend<{ app: [ElectronApplication, Page]; page: Page }>({
-    app: async ({}, use, testInfo) => {
+    app: async ({}, _use, testInfo) => {
       testInfo.skip(true, "Not running in Electron");
     },
     page: async ({ browser, scenario, request, testMediaPath }, use) => {

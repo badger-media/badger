@@ -6,8 +6,6 @@ import { getLogger } from "../base/logging";
 import { inspect } from "node:util";
 import { DEFAULT_OBS_PORT } from "./constants";
 
-const logger = getLogger("obs");
-
 /*
  * This file contains OBSConnection, a wrapper around obs-websocket-js that provides a higher level, more typesafe API.
  * In general, anything that requires more than one call to OBS should go in obsHelpers.ts instead.

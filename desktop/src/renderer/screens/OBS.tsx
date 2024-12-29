@@ -26,7 +26,7 @@ import { Input } from "@badger/components/input";
 import { dispatch, useAppSelector } from "../store";
 
 export function OBSSettings() {
-  const { connecting, connected, version, platform } = useAppSelector(
+  const { connecting, connected, version, platform, error } = useAppSelector(
     (state) => state.obs.connection,
   );
 
@@ -37,7 +37,6 @@ export function OBSSettings() {
       password: "",
     },
   });
-  const [error, setError] = useState<string | null>(null);
   return (
     <div>
       <form

@@ -30,7 +30,7 @@ export function createReduxDevServer(
 ) {
   const app = express();
   app.use(bodyParserJSON());
-  app.get("/getState", (req, res) => {
+  app.get("/getState", (_req, res) => {
     res.json(store.getState());
   });
   app.post("/dispatch/:actionType", (req, res) => {

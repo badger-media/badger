@@ -6,8 +6,6 @@ import { defineConfig, devices } from "@playwright/test";
  */
 // require('dotenv').config();
 
-const ELECTRON = Boolean(process.env.TEST_USE_ELECTRON);
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */

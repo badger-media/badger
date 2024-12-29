@@ -1,6 +1,5 @@
 import * as fsp from "fs/promises";
 
-import { getLogger } from "../base/logging";
 import { createAppSlice } from "../base/reduxHelpers";
 import {
   doDownloadMedia,

@@ -47,7 +47,7 @@ import { cloneDeep, merge } from "lodash";
 
 const logger = getLogger("store");
 
-const loggerMiddleware: Middleware = (store) => (next) => (action) => {
+const loggerMiddleware: Middleware = (_store) => (next) => (action) => {
   if (typeof action !== "object" || action === null) {
     return next(action);
   }

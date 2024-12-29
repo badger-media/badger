@@ -10,7 +10,7 @@ process.once("loaded", () => {
     onStateChange: (
       callback: (actionType: string, newState: DeepPartial<AppState>) => void,
     ) => {
-      ipcRenderer.on("stateChange", (event, actionType, newState) => {
+      ipcRenderer.on("stateChange", (_event, actionType, newState) => {
         callback("@@main/" + actionType, newState);
       });
     },

@@ -1,8 +1,5 @@
 import got, { type Got } from "got";
 import invariant from "../../common/invariant";
-import { getLogger } from "../base/logging";
-
-const logger = getLogger("ontime");
 
 interface OntimeInfo {
   networkInterfaces: unknown[];

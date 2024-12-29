@@ -10,13 +10,13 @@ export function setupStoreIPC(
   store: AppStore,
   exposedActionCreators: ExposedActionCreators,
 ) {
-  ipcMain.on("dispatch", (event, action) => {
+  ipcMain.on("dispatch", (_event, action) => {
     store.dispatch(action);
   });
 
   ipcMain.handle("getState", () => store.getState());
 
-  ipcMain.handle("dispatch", (event, actionType, ...args) => {
+  ipcMain.handle("dispatch", (_event, actionType, ...args) => {
     invariant(
       actionType in exposedActionCreators,
       "Tried to dispatch non-exposed action " + actionType,

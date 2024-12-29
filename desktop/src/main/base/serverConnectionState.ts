@@ -4,7 +4,7 @@ import {
   checkForVersionSkew,
   newAPIClient,
 } from "./serverApiClient";
-import { AppState, AppThunk } from "../store";
+import { AppState } from "../store";
 
 const serverConnectionSlice = createSlice({
   name: "serverConnection",

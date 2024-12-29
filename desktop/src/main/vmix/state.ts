@@ -13,10 +13,7 @@ import {
   loadAssets as doLoadAssets,
 } from "./vmixHelpers";
 import { VMIX_NAMES } from "../../common/constants";
-import {
-  PartialMediaModel,
-  PartialMediaType,
-} from "@badger/prisma/utilityTypes";
+import { PartialMediaType } from "@badger/prisma/utilityTypes";
 import { getLogger } from "../base/logging";
 
 const logger = getLogger("vmix/state");
