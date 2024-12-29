@@ -178,7 +178,7 @@ jobs:
           PLAYWRIGHT_HTML_REPORT: ${{ github.workspace }}/server/playwright-report
 
       - uses: actions/upload-artifact@v3
-        if: always()
+        if: failure()
         with:
           name: playwright-report-server
           path: ./server/playwright-report/
@@ -187,10 +187,13 @@ jobs:
   test-e2e-desktop-standalone:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ELECTRON: [true, false]
     env:
       NODE_ENV: test
       E2E_TEST: "true"
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: ${{ matrix.ELECTRON == 'true' && 1 || 0 }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 18.x
@@ -210,15 +213,21 @@ jobs:
       - name: Make logs folder
         run: mkdir -p ${{ runner.temp }}/logs
 
+      - uses: ./.github/steps/setup-playwright
+        with:
+          working-directory: ./server
+        if: matrix.ELECTRON == 'false'
+
       - name: Run Playwright tests
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn ${{ runner.debug && 'test:e2e:debug' || 'test:e2e' }} --project standalone
         working-directory: ./desktop
         env:
           PLAYWRIGHT_HTML_REPORT: ${{ github.workspace }}/desktop/playwright-report
           BADGER_LOGS_PATH: ${{ runner.temp }}/logs
+          ELECTRON: ${{ matrix.ELECTRON }}
 
       - uses: actions/upload-artifact@v3
-        if: always()
+        if: failure()
         with:
           name: playwright-report-desktop
           path: |
@@ -297,9 +306,10 @@ jobs:
         env:
           PLAYWRIGHT_HTML_REPORT: ${{ github.workspace }}/desktop/playwright-report
           BADGER_LOGS_PATH: ${{ runner.temp }}/logs
+          ELECTRON: "true"
 
       - uses: actions/upload-artifact@v3
-        if: always()
+        if: failure()
         with:
           name: playwright-report-desktop
           path: |

@@ -108,6 +108,7 @@ jobs:
         working-directory: ./desktop
         env:
           TEST_APPLICATION_PATH: ${{ runner.temp }}\badger\Badger Desktop.exe
+          ELECTRON: "true"
 
   linear:
     needs: [test-e2e-server, test-desktop]
