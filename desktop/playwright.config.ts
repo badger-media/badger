@@ -30,17 +30,8 @@ export default defineConfig({
     trace: "on-first-retry",
   },
 
-  testDir: "./e2e/standalone",
-
   /* Configure projects for major browsers */
   projects: [
-    {
-      name: "renderer",
-      use: {
-        ...devices["Desktop Chrome"],
-      },
-      testDir: "./src/renderer/tests",
-    },
     {
       name: "standalone",
       use: {
