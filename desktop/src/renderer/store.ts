@@ -28,7 +28,7 @@ import { createRendererActionCreatorsProxy } from "./actionProxiesRenderer";
  */
 
 const mainProcessActionRedirectMiddleware: Middleware =
-  (store) => (next) => (action) => {
+  (_store) => (next) => (action) => {
     // Don't try to handle non-object actions
     if (typeof action !== "object" || action === null) {
       return next(action);
@@ -44,7 +44,7 @@ const mainProcessActionRedirectMiddleware: Middleware =
   };
 
 export const store = configureStore({
-  reducer: (state = {}, action: PayloadAction<AppState>) => action.payload,
+  reducer: (_state = {}, action: PayloadAction<AppState>) => action.payload,
   middleware: (def) =>
     def({
       thunk: false,

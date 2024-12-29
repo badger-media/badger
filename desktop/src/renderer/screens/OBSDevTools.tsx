@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
-import { ipc } from "../ipc";
 import { Button } from "@badger/components/button";
+import { dispatch, useAppSelector } from "../store";
+import { OBSRequestTypes } from "obs-websocket-js";
 
 export default function OBSDevToolsScreen() {
-  const connState = ipc.obs.getConnectionState.useQuery();
+  const connState = useAppSelector((state) => state.obs.connection);
   const [req, setReq] = useState("");
   const [args, setArgs] = useState("{}");
-  const execute = ipc.obs.dev.callArbitrary.useMutation();
   const doExecute = useCallback(async () => {
     let argsJSON;
     try {
@@ -15,8 +15,12 @@ export default function OBSDevToolsScreen() {
       alert("Invalid args JSON");
       return;
     }
-    execute.mutate({ req, params: argsJSON });
-  }, [req, args, execute]);
+    dispatch.obsCallArbitrary({
+      req: req as keyof OBSRequestTypes,
+      data: argsJSON,
+    });
+  }, [req, args]);
+  const callResult = useAppSelector((state) => state.obs.arbitraryCallResult);
 
   return (
     <div>
@@ -29,7 +33,7 @@ export default function OBSDevToolsScreen() {
             onChange={(e) => setReq(e.target.value)}
             className="border-2 border-black"
           >
-            {connState.data?.availableRequests
+            {connState.availableRequests
               ?.sort((a, b) => a.localeCompare(b))
               ?.map((r) => (
                 <option key={r} value={r}>
@@ -51,17 +55,9 @@ export default function OBSDevToolsScreen() {
       <div className="mt-4">
         <h2 className="text-lg">Response</h2>
         <pre className="max-w-[80%] max-h-48 overflow-y-scroll overflow-x-scroll">
-          {JSON.stringify(execute.data, null, 2)}
+          {JSON.stringify(callResult, null, 2)}
         </pre>
       </div>
-      {execute.error && (
-        <div className="mt-4">
-          <h2 className="text-lg text-danger-4">Error</h2>
-          <pre className="max-w-[80%] max-h-48 overflow-y-scroll">
-            {JSON.stringify(execute.error, null, 2)}
-          </pre>
-        </div>
-      )}
     </div>
   );
 }

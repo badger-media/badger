@@ -23,7 +23,12 @@ import {
 import { getLogger } from "./base/logging";
 import { inspect } from "util";
 import { serverDataSlice } from "./base/serverDataState";
-import { addContinuityItemAsScene, connectToOBS, obsSlice } from "./obs/state";
+import {
+  addContinuityItemAsScene,
+  callArbitrary,
+  connectToOBS,
+  obsSlice,
+} from "./obs/state";
 import {
   integrationsReducer,
   overrideSupportedIntegrations,
@@ -48,8 +53,7 @@ const loggerMiddleware: Middleware = (store) => (next) => (action) => {
   }
   logger.info(`action: ${(action as Action).type}`);
   logger.debug(inspect(action));
-  const state = next(action);
-  return state;
+  return next(action);
 };
 
 const topReducer = combineReducers({
@@ -113,9 +117,11 @@ export const store = configureStore({
     }).concat(listener.middleware, loggerMiddleware),
 
   enhancers: (def) =>
-    def().concat(
-      remoteReduxDevToolsEnhancer({ hostname: "localhost", port: 5175 }),
-    ),
+    import.meta.env.BADGER_ENABLE_REDUX_DEVTOOLS !== "true"
+      ? def()
+      : def().concat(
+          remoteReduxDevToolsEnhancer({ hostname: "localhost", port: 5175 }),
+        ),
 });
 
 export type AppStore = typeof store;
@@ -140,5 +146,6 @@ export const exposedActionCreators = {
   loadAssets,
   overrideSupportedIntegrations,
   setSetting,
+  obsCallArbitrary: callArbitrary,
 };
 export type ExposedActionCreators = typeof exposedActionCreators;

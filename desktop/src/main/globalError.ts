@@ -1,6 +1,6 @@
 import { AsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "./base/reduxHelpers";
-import { updateContinuityScenes } from "./obs/state";
+import { callArbitrary, updateContinuityScenes } from "./obs/state";
 import { updateLoadState } from "./vmix/state";
 
 /**
@@ -49,6 +49,8 @@ const globalErrorSlice = createAppSlice({
 
     handle("Failed to update OBS state", updateContinuityScenes.rejected);
     handle("Failed to update vMix state", updateLoadState.rejected);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handle("Arbitrary call failed", callArbitrary.rejected as any);
   },
 });
 

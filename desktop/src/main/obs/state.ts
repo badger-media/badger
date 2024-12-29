@@ -1,12 +1,13 @@
 import { createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
 import { createAppSlice } from "../base/reduxHelpers";
-import { createOBSConnection } from "./obs";
+import { createOBSConnection, obsConnection } from "./obs";
 import { AppState } from "../store";
 import { getLogger } from "../base/logging";
 import { addOrReplaceMediaAsScene, findContinuityScenes } from "./obsHelpers";
 import { listenOnStore } from "../storeListener";
 import { serverAPI } from "../base/serverApiClient";
 import invariant from "../../common/invariant";
+import { OBSRequestTypes, OBSResponseTypes } from "obs-websocket-js";
 
 const logger = getLogger("obs/state");
 
@@ -25,6 +26,9 @@ export const obsSlice = createAppSlice({
       continuityItemID: number;
       sources: { mediaID?: number }[];
     }[],
+    arbitraryCallResult: null as
+      | null
+      | OBSResponseTypes[keyof OBSResponseTypes],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -51,6 +55,11 @@ export const obsSlice = createAppSlice({
           sources: s.sources.map((src) => ({ mediaID: src.mediaID })),
         }));
       }
+    });
+
+    builder.addCase(callArbitrary.fulfilled, (state, action) => {
+      // @ts-expect-error type too complex
+      state.arbitraryCallResult = action.payload;
     });
 
     builder.addMatcher(
@@ -99,6 +108,28 @@ export const tryConnectToOBS = createAsyncThunk(
       logger.info(`Failed to connect to OBS using saved credentials: ${e}`);
       return;
     }
+  },
+);
+
+export const callArbitrary = createAsyncThunk(
+  "obs/callArbitrary",
+  async (
+    payload: {
+      req: keyof OBSRequestTypes;
+      data?: OBSRequestTypes[keyof OBSRequestTypes];
+    },
+    api,
+  ) => {
+    const state = api.getState() as AppState;
+    if (!state.settings.devtools.enabled) {
+      return api.rejectWithValue("Dev tools are disabled");
+    }
+    invariant(obsConnection, "OBS connection not initialized");
+    const res = await obsConnection.callArbitraryDoNotUseOrYouWillBeFired(
+      payload.req,
+      payload.data,
+    );
+    return res;
   },
 );
 
