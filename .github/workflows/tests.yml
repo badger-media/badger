@@ -215,7 +215,7 @@ jobs:
 
       - uses: ./.github/steps/setup-playwright
         with:
-          working-directory: ./server
+          working-directory: ./desktop
         if: matrix.ELECTRON == 'false'
 
       - name: Run Playwright tests
