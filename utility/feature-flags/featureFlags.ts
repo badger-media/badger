@@ -1,5 +1,4 @@
-const serverFlagStates = new Map<string, boolean>();
-const desktopFlagStates = new Map<string, boolean>();
+const flagStates = new Map<string, boolean>();
 function flag(
   name: string,
   varName: string,
@@ -12,20 +11,13 @@ function flag(
   } else {
     v = def;
   }
-  if (desktop) {
-    desktopFlagStates.set(name, v);
-  } else {
-    serverFlagStates.set(name, v);
-  }
+  flagStates.set(name, v);
   return v;
 }
 
-export function logFlagState(desktop?: boolean) {
+export function logFlagState() {
   console.log("Feature Flags:");
-  for (const [name, state] of (desktop
-    ? desktopFlagStates
-    : serverFlagStates
-  ).entries()) {
+  for (const [name, state] of flagStates.entries()) {
     console.log(`  ${name}: ${state ? "enabled" : "disabled"}`);
   }
   console.log();

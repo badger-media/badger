@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: "yarn.lock"
       - run: yarn install --immutable --inline-builds
 
-      - run: yarn prettier --check '{desktop,jobrunner,server}/**/*.{ts,tsx}'
+      - run: yarn prettier --check '{jobrunner,server}/**/*.{ts,tsx}'
 
   lint:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./desktop/coverage/coverage-final.json,./server/coverage/coverage-final.json,./jobrunner/coverage/coverage-final.json,./utility/testing/coverage/coverage-final.json
+          files: ./server/coverage/coverage-final.json,./jobrunner/coverage/coverage-final.json,./utility/testing/coverage/coverage-final.json
 
   test-integration-server-jobrunner:
     runs-on: ubuntu-latest
@@ -182,129 +182,4 @@ jobs:
         with:
           name: playwright-report-server
           path: ./server/playwright-report/
-          retention-days: 30
-
-  test-e2e-desktop-standalone:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    env:
-      NODE_ENV: test
-      E2E_TEST: "true"
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
-
-      - name: Install dependencies
-        run: yarn install --immutable --inline-builds
-
-      - name: Build desktop
-        run: yarn build
-        working-directory: ./desktop
-
-      - name: Make logs folder
-        run: mkdir -p ${{ runner.temp }}/logs
-
-      - name: Run Playwright tests
-        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn ${{ runner.debug && 'test:e2e:debug' || 'test:e2e' }} --project standalone
-        working-directory: ./desktop
-        env:
-          PLAYWRIGHT_HTML_REPORT: ${{ github.workspace }}/desktop/playwright-report
-          BADGER_LOGS_PATH: ${{ runner.temp }}/logs
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report-desktop
-          path: |
-            ./desktop/playwright-report/
-            ./desktop/traces/
-            ./desktop/test-results/
-            ${{ runner.temp }}/logs
-          retention-days: 30
-
-  test-e2e-desktop-complete:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    env:
-      NODE_ENV: test
-      E2E_TEST: "true"
-      DATABASE_URL: postgres://root:postgres@localhost:5432/badger_test
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
-
-      - name: Docker Compose
-        uses: hoverkraft-tech/compose-action@v2.0.2
-
-      - name: Install dependencies
-        run: yarn install --immutable --inline-builds
-
-      - uses: FedericoCarboni/setup-ffmpeg@v3
-        with:
-          ffmpeg-version: "release"
-
-      - name: Build server
-        run: |
-          yarn build
-          cp -r public .next/standalone/server/public
-          mkdir -p .next/standalone/server/.next
-          cp -r .next/static .next/standalone/server/.next/static
-        working-directory: ./server
-
-      - name: Build Jobrunner
-        run: |
-          yarn build
-          cp ../utility/prisma/schema.prisma .
-        working-directory: ./jobrunner
-
-      - name: Build desktop
-        run: yarn build
-        working-directory: ./desktop
-
-      - name: Migrate database
-        run: yarn prisma:migrateProd
-
-      - name: Make logs folder
-        run: mkdir -p ${{ runner.temp }}/logs
-
-      - name: Start Jobrunner
-        run: |
-          node --enable-source-maps dist/index.cjs --watch --pidFile ${{ runner.temp }}/jobrunner.pid > ${{ runner.temp }}/logs/jobrunner.log 2>&1 &
-          npx -y wait-on file:/${{ runner.temp }}/jobrunner.pid
-        working-directory: ./jobrunner
-
-      - name: Start server
-        run: |
-          HOSTNAME=localhost node server/server.js > ${{ runner.temp }}/logs/server.log 2>&1 &
-          npx -y wait-on -v -t 120000 http://localhost:3000/api/healthz
-        working-directory: ./server/.next/standalone
-
-      - name: Run Playwright tests
-        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn ${{ runner.debug && 'test:e2e:debug' || 'test:e2e' }} --project complete
-        working-directory: ./desktop
-        env:
-          PLAYWRIGHT_HTML_REPORT: ${{ github.workspace }}/desktop/playwright-report
-          BADGER_LOGS_PATH: ${{ runner.temp }}/logs
-
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report-desktop
-          path: |
-            ./desktop/playwright-report/
-            ./desktop/traces/
-            ./desktop/test-results/
-            ${{ runner.temp }}/logs
           retention-days: 30

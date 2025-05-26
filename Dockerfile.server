@@ -7,7 +7,6 @@ FROM base AS build
 WORKDIR /app
 COPY ./.yarn/ .yarn/
 COPY .yarnrc.yml .yarnrc.yml
-COPY desktop desktop/
 COPY server server/
 COPY jobrunner jobrunner/
 COPY utility utility/
