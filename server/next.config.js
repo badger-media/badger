@@ -7,7 +7,9 @@ const { execFileSync } = require("child_process");
 const packageJSON = require("./package.json");
 const gitCommit =
   process.env.GIT_REV ??
-  execFileSync("/usr/bin/git", ["rev-parse", "HEAD"]).toString().trim();
+  execFileSync(process.env.GIT_PATH ?? "/usr/bin/git", ["rev-parse", "HEAD"])
+    .toString()
+    .trim();
 const sentryRelease =
   "badger-server@" + packageJSON.version + "-" + gitCommit.slice(0, 7);
 
