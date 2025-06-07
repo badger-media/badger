@@ -15,29 +15,19 @@ Please ensure your PR has a Linear ticket associated with it before merging.
 
 ## Project Structure
 
-`desktop`, `jobrunner`, and `server` are all independent projects with their own `package.json` files.
+`jobrunner` and `server` are all independent projects with their own `package.json` files.
 They are combined into a single project using [Yarn Workspaces](https://yarnpkg.com/features/workspaces).
 There are also some extra packages, currently our [shadcn/ui](https://ui.shadcn.com) components and our [Prisma](https://www.prisma.io/) database client, in the `utility` folder.
 
 In terms of imports,
 
-- `desktop` imports some types from `server`, namely tRPC definitions
-  - Note that only type imports are allowed, to avoid bundling server code into the desktop build. ESLint will warn you if you try to import anything else. (Importing from `@badger/prisma` is fine.)
 - `jobrunner` is entirely separate from `server`
-- Desktop and Server use `@badger/prisma` (our UI components library, found in `utility/components`)
-- All three import `@badger/prisma` (the Prisma client, found in `utility/prisma`)
+- Server uses `@badger/prisma` (our UI components library, found in `utility/components`). It's a separate package, rather than part of the server project, because it used to be also used by Desktop before it was split out into its own repo.
+- Both import `@badger/prisma` (the Prisma client, found in `utility/prisma`)
 
 In terms of communication,
 
 - Server exposes a [tRPC](https://trpc.io/) API (in [app/api/\_router.ts](./server/app/api/_router.ts), which is consumed by Desktop
-- As Desktop is an Electron app, it has two separate processes: the main process and the renderer process.
-  The renderer process is the Chrome window, while the main process is the Node.js backend.
-  They are kept separate to avoid security issues.
-  They communicate over Electron IPC in two ways:
-  - Request/response is done using tRPC using [`electron-trpc`](https://github.com/jsonnull/electron-trpc)
-    - This is done to improve type safety which is traditionally difficult in Electron
-    - This is still done over IPC, not HTTP
-  - Events are done through a custom system (defined in [common/ipcEvents.ts](./desktop/src/common/ipcEvents.ts))
 - Jobrunner and Server are entirely independent, and only communicate by reading and writing to the PostgreSQL database.
   - Server triggers Jobrunner jobs through the Nomad job scheduler, so Jobrunner is not always running.
 
@@ -70,7 +60,7 @@ You'll also need to set up the database connection string, S3 (MinIO) connection
 
 Then, run `yarn dev` (in the `server` folder) to start the server.
 
-To start the desktop app, run `yarn start` in the `desktop` folder, and to start Jobrunner run `yarn dev` in the `jobrunner` folder.
+To start Jobrunner run `yarn dev` in the `jobrunner` folder.
 
 If you get errors about missing database tables, most likely you haven't run the migrations, or there have been changes since you last pulled - run `yarn prisma:migrateDev`.
 

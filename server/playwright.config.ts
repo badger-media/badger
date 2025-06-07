@@ -51,17 +51,6 @@ export default defineConfig({
     { name: "setup", testMatch: /.*\.setup\.ts/ },
 
     {
-      name: "microserver",
-      testDir: "./microserver",
-      testMatch: /.*\.spec\.ts/,
-      dependencies: ["setup"],
-      use: {
-        ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/user.json",
-      },
-    },
-
-    {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
@@ -134,11 +123,6 @@ export default defineConfig({
       reuseExistingServer: true,
       stdout: "pipe",
       stderr: "pipe",
-    },
-    {
-      command: "yarn microserver",
-      port: 8594,
-      reuseExistingServer: !process.env.CI,
     },
   ],
 });
