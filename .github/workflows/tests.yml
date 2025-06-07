@@ -108,7 +108,7 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
 
-      - uses: FedericoCarboni/setup-ffmpeg@v3
+      - uses: afoley587/setup-ffmpeg@a7cd62787aaae92d7c452f79f85ab25e2b639bb0
         with:
           ffmpeg-version: "release"
 
@@ -149,6 +149,10 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable --inline-builds
+
+      - uses: afoley587/setup-ffmpeg@a7cd62787aaae92d7c452f79f85ab25e2b639bb0
+        with:
+          ffmpeg-version: "release"
 
       - name: Build server
         run: |
