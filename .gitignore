@@ -13,3 +13,5 @@ node_modules/
 coverage/
 */coverage/
 playwright/.auth/
+
+.direnv/
