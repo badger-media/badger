@@ -2,6 +2,7 @@
 
 import { Asset, Rundown } from "@badger/prisma/types";
 import React, { ReactNode, useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import classNames from "classnames";
 import Button from "@badger/components/button";
 import {
@@ -71,8 +72,17 @@ function AssetsCategory({
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   return (
-    <div className="shadow-md rounded-md bg-light p-2 mb-4">
-      <div onClick={() => setExpanded((v) => !v)} role="button">
+    <div
+      className="shadow-md rounded-md bg-light p-2 mb-4"
+      data-testid={`asset-category-block-${category}`}
+    >
+      <div
+        onClick={() => setExpanded((v) => !v)}
+        role="button"
+        data-testid={`asset-category-header-${category}`}
+        aria-label={`Expand ${category}`}
+        aria-expanded={isExpanded}
+      >
         {isExpanded ? (
           <IoChevronDown className="inline-block" aria-label="Collapse" />
         ) : (
@@ -81,7 +91,10 @@ function AssetsCategory({
         <h3 className="inline font-lg font-bold">{category}</h3>
       </div>
       {isExpanded && (
-        <div className="flex flex-col">
+        <div
+          className="flex flex-col"
+          data-testid={`asset-category-content-${category}`}
+        >
           {assets
             .sort((a, b) => a.order - b.order)
             .map((asset) => {
@@ -157,6 +170,19 @@ function AssetsCategory({
                       </PopoverContent>
                     </Popover>
                   </div>
+                  {(asset.media.state === MediaState.Ready ||
+                    asset.media.state === MediaState.ReadyWithWarnings) && (
+                    <Link
+                      href={`/media/download/${asset.media.id}`}
+                      target="_blank"
+                      data-testid={`RundownAssets.downloadButton.${asset.id}`}
+                      className="ml-2"
+                    >
+                      <Button color="ghost" size="small">
+                        Download
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               );
             })}
