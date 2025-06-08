@@ -26,53 +26,6 @@ permissions:
   packages: write
 
 jobs:
-  build-desktop-windows:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        type: [public, ystv]
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
-
-      - run: yarn install --immutable
-
-      - name: Set version
-        shell: pwsh
-        run: |
-          $pkg = Get-Content ./desktop/package.json | ConvertFrom-Json
-          $pkg.version = "${{inputs.tag }}" -replace "^v", ""
-          if ("${{ inputs.strip_rc }}" -eq "true") {
-            $pkg.version = $pkg.version -replace "-rc.*", ""
-          }
-          $pkg | ConvertTo-Json -Depth 32 | Set-Content ./desktop/package.json
-
-      - run: "yarn package --win --publish never"
-        working-directory: ./desktop
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DESKTOP_SENTRY_DSN: ${{ secrets.DESKTOP_SENTRY_DSN }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          ENVIRONMENT: prod
-          IS_YSTV_BUILD: ${{ matrix.type == 'ystv' && 'true' || 'false' }}
-
-      - name: Clean up
-        run: Remove-Item -Recurse -Force ./desktop/dist/win-unpacked
-        shell: pwsh
-
-      - uses: actions/upload-artifact@v4
-        with:
-          path: ./desktop/dist
-          name: badger-desktop-windows${{ matrix.type == 'ystv' && '-ystv' || '' }}
-
   build-docker-server:
     runs-on: ubuntu-latest
     if: ${{ inputs.push_docker == true }}
