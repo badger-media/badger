@@ -17,7 +17,7 @@ Badger is made up of three components:
 
 - `server`, a [Next.js](https://nextjs.org/) app which handles the web interface and API
 - `jobrunner`, a standalone [Node.js](https://nodejs.org/en/) service which handles the media processing
-- `desktop`, a [Electron](https://www.electronjs.org/) app which handles the OBS integration
+- `desktop`, a [Electron](https://www.electronjs.org/) app which handles the OBS integration. Desktop lives [in its own repository](https://github.com/badger-media/badger-desktop)
 
 All of these components are written in [TypeScript](https://www.typescriptlang.org/).
 
@@ -32,7 +32,6 @@ It also interfaces with a few other services:
 _If you're looking to set up a development instance, follow the [contributing guide](./CONTRIBUTING.md) instead._
 
 Every release has Docker images published at `ghcr.io/badger-media/badger/server` and `ghcr.io/badger-media/badger/jobrunner`.
-We also create Desktop builds (Windows-only for now) in the [releases](https://github.com/ystv/badger/releases) section on GitHub.
 There is an example [docker-compose file](./docker-compose-example.yml) in the repository which runs server, jobrunner, and all dependencies.
 
 Server and Jobrunner are configured by setting environment variables. A minimal set (both use the same variables) is:

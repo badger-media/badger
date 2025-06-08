@@ -7,8 +7,6 @@ FROM base AS build
 WORKDIR /app
 COPY ./.yarn/ .yarn/
 COPY .yarnrc.yml .yarnrc.yml
-# desktop needs to be included, even if we're not building it, otherwise yarn install fails
-COPY desktop desktop/
 COPY server server/
 COPY jobrunner jobrunner/
 COPY utility utility/

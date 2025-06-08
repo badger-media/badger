@@ -3,7 +3,6 @@
   "private": true,
   "workspaces": [
     "./server",
-    "./desktop",
     "./jobrunner",
     "./utility/*"
   ],
@@ -24,11 +23,11 @@
     "prettify": "yarn workspaces foreach -Atp --exclude badger-root-workspace run prettify",
     "test": "yarn workspaces foreach -Atp --exclude badger-root-workspace run test",
     "test:integration": "yarn workspaces foreach -At --exclude badger-root-workspace run test:integration",
-    "typecheck": "yarn workspaces foreach -Atp --include 'badger-{desktop,jobrunner,server}' run tsc --noEmit",
+    "typecheck": "yarn workspaces foreach -Atp --include 'badger-{jobrunner,server}' run tsc --noEmit",
     "prepare": "husky"
   },
   "lint-staged": {
-    "{desktop,server,jobrunner,utility}/*.{js,jsx,ts,tsx}": "eslint --fix",
+    "{server,jobrunner,utility}/*.{js,jsx,ts,tsx}": "eslint --fix",
     "*": "prettier --ignore-unknown --write"
   },
   "resolutions": {

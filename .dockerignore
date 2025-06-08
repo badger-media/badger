@@ -8,8 +8,6 @@
 
 node_modules
 
-desktop/out/
-desktop/.vite/
 server/.next/
 jobrunner/dist/
 
