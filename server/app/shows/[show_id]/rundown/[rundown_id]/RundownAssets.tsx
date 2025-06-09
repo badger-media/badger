@@ -134,6 +134,7 @@ function AssetsCategory({
               return (
                 <div
                   key={asset.id}
+                  data-testid={`asset-row-${asset.name}`}
                   className={classNames(
                     "flex flex-row items-center space-x-2",
                     asset.media.state === "Pending" && "text-mid-dark",
