@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "dotenv-cli": "^7.2.1",
-    "prisma": "6.7.0",
+    "prisma": "^6.9.0",
     "prisma-json-types-generator": "^3.4.2",
     "typescript": "^5.8.3",
     "zod-prisma-types": "^3.2.4"
@@ -16,6 +16,6 @@
     "prisma:migrateProd": "dotenv -c -e ../../server/.env -- prisma migrate deploy"
   },
   "dependencies": {
-    "@prisma/client": "6.7.0"
+    "@prisma/client": "^6.9.0"
   }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as esbuild from "esbuild";
 import { sentryEsbuildPlugin } from "@sentry/esbuild-plugin";
-import packageJSON from "./package.json" assert { type: "json" };
+import packageJSON from "./package.json" with { type: "json" };
 import { execFileSync } from "child_process";
 import { copyFile } from "fs/promises";
 import * as glob from "glob";
