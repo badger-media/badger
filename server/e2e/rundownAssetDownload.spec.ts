@@ -33,19 +33,15 @@ test("download asset from rundown", async ({ showPage }) => {
   });
   await categoryHeaderButton.click();
 
-  // Get the main container for this category by going to the parent of the header button
-  const categoryContainer = categoryHeaderButton.locator("xpath=..");
-
-  // Find and click the "Upload new asset" button within this category container.
-  const uploadNewAssetButton = categoryContainer.getByRole("button", {
-    name: "Upload new asset",
-  });
-  await expect(uploadNewAssetButton).toBeVisible({ timeout: 10000 }); // Increased timeout, ensure panel is open
-  await uploadNewAssetButton.click();
+  await showPage
+    .getByRole("button", {
+      name: "Upload new asset",
+    })
+    .click();
   await showPage.getByText("Upload file").click();
 
   const uploadPromise = showPage.waitForResponse(async (response) => {
-    // tusd typically returns 201 or 204 on successful chunk/final upload
+    // tusd returns 201 or 204 on successful chunk/final upload
     return (
       response.url().startsWith("http://localhost:1080/files") &&
       (response.status() === 201 || response.status() === 204)
@@ -63,7 +59,7 @@ test("download asset from rundown", async ({ showPage }) => {
       ),
     });
 
-  await uploadPromise; // TUS upload completes, dialog should close
+  await uploadPromise; // upload complete
 
   // The category gets collapsed when the upload completes
   await expect(
@@ -77,8 +73,7 @@ test("download asset from rundown", async ({ showPage }) => {
   const categoryHeader = showPage.getByTestId(
     "asset-category-header-" + categoryName,
   );
-  await categoryHeader.waitFor({ state: "visible", timeout: 10000 });
-  await categoryHeader.click();
+  await categoryHeader.click({ timeout: 10_000 });
 
   // Now that it's clicked, the content area should eventually become visible.
   const categoryContent = showPage.getByTestId(
@@ -91,7 +86,7 @@ test("download asset from rundown", async ({ showPage }) => {
   const assetItemLocator = categoryContent
     .locator('div:has-text("' + testFileName + '")')
     .first();
-  await expect(assetItemLocator).toBeVisible({ timeout: 30000 }); // Allow time for asset processing
+  await expect(assetItemLocator).toBeVisible({ timeout: 30_000 }); // Allow time for asset processing
 
   // Then, locate and check the download button within the visible asset item.
   const downloadButton = assetItemLocator.locator(
