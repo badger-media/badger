@@ -7296,7 +7296,6 @@ __metadata:
     postcss: "npm:^8.4.27"
     prettier: "npm:^3.0.3"
     prettier-plugin-tailwindcss: "npm:^0.6.0"
-    prisma: "npm:^6.9.0"
     react: "npm:18.3.1"
     react-beforeunload: "npm:^2.6.0"
     react-day-picker: "npm:^8.8.0"
