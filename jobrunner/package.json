@@ -19,7 +19,7 @@
     "@badger/prisma": "workspace:*",
     "@badger/testing": "workspace:*",
     "@googleapis/drive": "^8.0.0",
-    "@sentry/node": "^8.4.0",
+    "@sentry/node": "^9.29.0",
     "@types/dotenv-flow": "^3.2.0",
     "@types/lodash": "^4.14.199",
     "dotenv-flow": "^3.2.0",
