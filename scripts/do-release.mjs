@@ -106,7 +106,7 @@ const octo = new Octokit({
 
 console.log(chalk.blue("Updating package versions..."));
 let versions = [];
-for (const workspace of ["desktop", "jobrunner", "server"]) {
+for (const workspace of ["jobrunner", "server"]) {
   versions.push(
     JSON.parse(await fsp.readFile(`${workspace}/package.json`, "utf-8"))
       .version,
@@ -126,7 +126,7 @@ const newV = semver.inc(
   data.type === "prerelease" ? preRelType : undefined,
 );
 console.log(`Bumping version from ${maxV} to ${newV}`);
-for (const workspace of ["desktop", "jobrunner", "server"]) {
+for (const workspace of ["jobrunner", "server"]) {
   // We don't use a JSON.parse/JSON.stringify cycle here because we want to preserve the formatting
   const pkg = await fsp.readFile(`${workspace}/package.json`, "utf-8");
   const newPkg = pkg.replace(/"version":\s*"[^"]+"/, `"version": "${newV}"`);
@@ -154,7 +154,7 @@ if (data.dontMakePR) {
   await run(`git checkout main`);
 
   const pr = await octo.rest.pulls.create({
-    owner: "ystv",
+    owner: "badger-media",
     repo: "badger",
     title: `Bump version to ${newV}`,
     base: "main",
@@ -162,7 +162,7 @@ if (data.dontMakePR) {
   });
   const prNumber = pr.data.number;
   await octo.rest.issues.addLabels({
-    owner: "ystv",
+    owner: "badger-media",
     repo: "badger",
     issue_number: prNumber,
     labels: ["release"],
@@ -171,7 +171,7 @@ if (data.dontMakePR) {
   console.log(
     chalk.green(
       `Opened PR ${chalk.underline(
-        `https://github.com/ystv/badger/pull/${prNumber}`,
+        `https://github.com/badger-media/badger/pull/${prNumber}`,
       )}. Enabling auto-merge...`,
     ),
   );
@@ -199,7 +199,7 @@ if (data.dontMakePR) {
   while (true) {
     const state = (
       await octo.rest.pulls.get({
-        owner: "ystv",
+        owner: "badger-media",
         repo: "badger",
         pull_number: prNumber,
       })
@@ -226,7 +226,7 @@ await run(`git tag -a v${newV} -m "v${newV}"`);
 await run(`git push origin v${newV}`);
 
 const release = await octo.rest.repos.createRelease({
-  owner: "ystv",
+  owner: "badger-media",
   repo: "badger",
   tag_name: `v${newV}`,
   name: `v${newV}`,
@@ -239,49 +239,7 @@ console.log(
   chalk.green("Release created."),
   chalk.underline(release.data.html_url),
 );
-console.log(chalk.blue("Running desktop build workflow..."));
-await octo.rest.actions.createWorkflowDispatch({
-  owner: "ystv",
-  repo: "badger",
-  workflow_id: "desktop-build.yml",
-  ref: `v${newV}`,
-  inputs: {
-    ref: `v${newV}`,
-    do_release: true,
-  },
-});
 
-let runId;
-for (let attempt = 0; attempt < 120; attempt++) {
-  const runs = await octo.rest.actions.listWorkflowRuns({
-    owner: "ystv",
-    repo: "badger",
-    workflow_id: "desktop-build.yml",
-  });
-  runId = runs.data.workflow_runs.find(
-    (run) => run.head_branch === `v${newV}`,
-  )?.id;
-  if (runId) {
-    break;
-  }
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-}
-if (!runId) {
-  console.error(
-    chalk.red(
-      "Could not find desktop build workflow run. Something's gone terribly wrong in the release script.",
-    ),
-  );
-  process.exit(1);
-}
-console.log(
-  `Follow along at ${chalk.underline(
-    `https://github.com/ystv/badger/actions/runs/${runId}`,
-  )}`,
-);
-await run(`gh run watch ${runId}`);
-
-console.log(chalk.green("Desktop build workflow complete."));
 console.log(
   `The draft release can be found at ${chalk.underline(
     release.data.html_url,
@@ -309,7 +267,7 @@ if (!ready) {
 }
 console.log(chalk.blue("Finalising release..."));
 await octo.rest.repos.updateRelease({
-  owner: "ystv",
+  owner: "badger-media",
   repo: "badger",
   release_id: release.data.id,
   draft: false,
