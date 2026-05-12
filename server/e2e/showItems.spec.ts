@@ -321,9 +321,46 @@ test("asset upload failure (BDGR-54)", async ({ showPage }) => {
     });
   await req;
 
-  await showPage.getByRole("button", { name: "Expand Test Assets" }).click();
-  await expect(showPage.getByTestId("RundownAssets.loadFailed")).toBeVisible({
-    timeout: 30_000,
+  async function ensureCategoryIsExpanded(
+    page: typeof showPage,
+    categoryTestIdSuffix: string,
+    timeout: number = 5000,
+  ) {
+    const categoryHeader = page.getByTestId(
+      `asset-category-header-${categoryTestIdSuffix}`,
+    );
+    const categoryContent = page.getByTestId(
+      `asset-category-content-${categoryTestIdSuffix}`,
+    );
+
+    const isExpanded = await categoryHeader.getAttribute("aria-expanded");
+
+    if (isExpanded !== "true") {
+      await categoryHeader.click();
+      await expect(categoryHeader).toHaveAttribute("aria-expanded", "true", {
+        timeout,
+      });
+    }
+    // After ensuring it's expanded (or was already), check content visibility
+    await expect(categoryContent).toBeVisible({ timeout });
+    return categoryContent; // Return for chaining locators
+  }
+
+  // Use expect().toPass() for robustly checking the icon, re-expanding category if needed.
+  await expect(async () => {
+    const categoryContent = await ensureCategoryIsExpanded(
+      showPage,
+      "Test Assets",
+      5000,
+    );
+
+    const failedAssetIcon = categoryContent
+      .getByTestId("asset-row-__FAIL__smpte_bars_15s.mp4")
+      .getByTestId("RundownAssets.loadFailed");
+
+    await expect(failedAssetIcon).toBeVisible({ timeout: 1000 });
+  }).toPass({
+    timeout: 30_000, // Overall timeout for the entire block to succeed
   });
 });
 
