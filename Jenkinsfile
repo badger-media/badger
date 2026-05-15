@@ -87,11 +87,11 @@ pipeline {
             }
             steps {
                 build job: 'Deploy Nomad Job', parameters: [
-                    string(name: 'JOB_FILE', value: 'badger-dev.nomad'),
+                    string(name: 'JOB_FILE', value: 'badger/dev.nomad'),
                     text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/badger/server:${imageTag}")
                 ]
                 build job: 'Deploy Nomad Job', parameters: [
-                    string(name: 'JOB_FILE', value: 'badger-jobrunner-dev.nomad'),
+                    string(name: 'JOB_FILE', value: 'badger/jobrunner-dev.nomad'),
                     text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/badger/jobrunner:${imageTag}")
                 ]
                 // Run database migrations
@@ -106,11 +106,11 @@ pipeline {
             }
             steps {
                 build job: 'Deploy Nomad Job', parameters: [
-                    string(name: 'JOB_FILE', value: 'badger-prod.nomad'),
+                    string(name: 'JOB_FILE', value: 'badger/prod.nomad'),
                     text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/badger/server:${imageTag}")
                 ]
                 build job: 'Deploy Nomad Job', parameters: [
-                    string(name: 'JOB_FILE', value: 'badger-jobrunner-prod.nomad'),
+                    string(name: 'JOB_FILE', value: 'badger/jobrunner-prod.nomad'),
                     text(name: 'TAG_REPLACEMENTS', value: "registry.comp.ystv.co.uk/ystv/badger/jobrunner:${imageTag}")
                 ]
                 // Run database migrations
