@@ -1,31 +1,38 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    ":automergeLinters",
-    ":automergePatch",
-    ":automergePr",
-    ":prHourlyLimit4",
-    "monorepo:prisma"
+    "config:base"
   ],
-  "postUpdateOptions": ["yarnDedupeHighest"],
-  "branchTopic": "{{{manager}}}-{{{depNameSanitized}}}-{{{newVersion}}}",
+  "dependencyDashboard": true,
+  "schedule": [
+    "before 5am on Monday"
+  ],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 10,
   "packageRules": [
     {
-      "extends": ["monorepo:nextjs"],
-      "automerge": false
+      "description": "Replace deprecated @tsconfig/node18 with the newer @tsconfig/node20",
+      "matchPackageNames": ["@tsconfig/node18"],
+      "groupName": "tsconfig updates",
+      "allowedVersions": "<=20",
+      "replaceString": "@tsconfig/node20"
     },
     {
-      "matchPackagePrefixes": ["@radix-ui/"],
-      "groupName": "Radix UI"
+      "description": "Ignore unmaintained type definitions that have no replacement",
+      "matchPackageNames": ["@types/detect-port", "@types/react-datepicker"],
+      "enabled": false
     },
     {
-      "matchDepTypes": ["devDependencies"],
-      "automerge": true
-    },
-    {
-      "matchPackagePrefixes": ["@types/*"],
-      "automerge": true
+      "description": "Auto‑merge minor/patch updates for non‑critical deps",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch"
     }
-  ]
+  ],
+  "ignoreDeps": [
+    "@types/detect-port",
+    "@types/react-datepicker"
+  ],
+  "semanticCommits": "enabled",
+  "commitMessagePrefix": "chore(deps):"
 }
